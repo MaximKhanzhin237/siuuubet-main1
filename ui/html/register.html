@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 45%;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-container">
+        <h2>Регистрация</h2>
+        <form id="register-form">
+            <input type="text" id="register-username" placeholder="Имя пользователя" required>
+            <input type="password" id="register-password" placeholder="Пароль" required>
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <div><a href="http://localhost:8080/login">У вас уже есть аккаунт?</a></div>
+        <div id="register-message" class="message"></div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const registerForm = document.getElementById('register-form');
+        const registerMessage = document.getElementById('register-message');
+
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch('http://localhost:8080/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, password}),
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    registerMessage.textContent = 'Успешная регистрация';
+                    registerMessage.classList.add('success-message');
+                    registerMessage.classList.remove('error-message');
+                    window.open('http://localhost:4040/home', '_self');
+                } else {
+                    registerMessage.textContent = data.message || 'Ошибка регистрации';
+                    registerMessage.classList.add('error-message');
+                    registerMessage.classList.remove('success-message');
+                }
+            } catch (error) {
+                registerMessage.textContent = 'Ошибка сети';
+                registerMessage.classList.add('error-message');
+                registerMessage.classList.remove('success-message');
+            }
+        });
+    });
+</script>
+</body>
+</html>
